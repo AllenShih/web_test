@@ -1,0 +1,24 @@
+/* h1{
+    color: red;
+}
+
+.title{
+    color: green;
+}
+
+#abutton{
+    color: red;
+} */
+
+#map {
+    width:50%;
+    height:700px;
+}
+
+#Sidebar {
+    width: 50%;
+    height: 700px;
+    float: left;
+    background-color: #f9c81e;
+
+}

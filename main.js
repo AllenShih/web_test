@@ -16,16 +16,7 @@ function initMap() {
     });
   }
 
-  // var myArray = [[1,2,3],[4,5,6],[7,8,9]]; 
-  // var t = document.getElementById("table1"); 
-  // for(var i=0;i<myArray.length;i++) { 
-  //    t.insertRow(); 
-  //    for(var j=0;j<myArray[i].length;j++) { 
-  //       t.rows[i].insertCell(j); 
-  //       t.rows[i].cells[j].innerText = myArray[i][j]; 
-  //    }    
-  // } 
-}
+  
 
 function test(){
   var myArray = [[1,2,3],[4,5,6],[7,8,9]]; 

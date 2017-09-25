@@ -10,15 +10,37 @@ function initMap() {
   });
   for (i = 0; i <highway_coor_lat.length ;i++) {
     var coor = { lat: highway_coor_lat[i] , lng: highway_coor_lon[i] };
+    var contentString = '<div>'+highway_coor_lat[i]+'</div><div>'+highway_coor_lon[i]+'</div>';
+    var infowindow = new google.maps.InfoWindow({
+      content: contentString
+    });
     var marker = new google.maps.Marker({
       position: coor,
       map: map
     });
+    
+    marker.addListener('click', function() {
+      infowindow.open(map, marker);
+    });
   }
 
   
+  // var myArray = [[1,2,3],[4,5,6],[7,8,9]]; 
+  // var t = document.getElementById("table1"); 
+  // for(var i=0;i<myArray.length;i++) { 
+  //    t.insertRow(); 
+  //    for(var j=0;j<myArray[i].length;j++) { 
+  //       t.rows[i].insertCell(j); 
+  //       t.rows[i].cells[j].innerText = myArray[i][j]; 
+  //    }    
+  // } 
+}
 
 function test(){
+  // var pg = require("pg");
+  // var connectionString = "postgres://postgres:postgres123@Servers/localhost:5432/database1";
+
+
   var myArray = [[1,2,3],[4,5,6],[7,8,9]]; 
   var t = document.getElementById("table1"); 
   for(var i=0;i<myArray.length;i++) { 

@@ -1,38 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Facebook API</title>
-</head>
-<body>
-<script>
-// Only works after `FB.init` is called
-function myFacebookLogin() {
-  FB.login(function(){
-  	FB.api('/me?fields=hometown', function(response) {
-  	  console.log(response);
-  	});
-  	FB.api('/me/feed', 'post', {message: 'Hello, kitty!'});
-  }, {scope: 'publish_actions'});
-}
-</script>
-<button onclick="myFacebookLogin()">Login with Facebook</button>
-<script>
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId      : '566796913514093',
-      xfbml      : true,
-      version    : 'v2.8'
-    });
-    FB.AppEvents.logPageView();
-  };
-  (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = "//connect.facebook.net/en_US/sdk.js";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
-</script>	
-</body>
+<html>
+  <head>
+    <title>Wifi 熱點</title>
+    <style type="text/css">
+      html, body { height: 100%; margin: 0; padding: 0; }
+      #map { height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script type="text/javascript">
+      function initMap() {
+        var map;
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 23.363882, lng: 121.044922},
+          zoom: 11
+        });
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', './data1.json');
+        xhr.onreadystatechange = function() {
+          if(xhr.readyState === 4) {
+            console.log(JSON.parse(xhr.responseText))
+            // var data = JSON.parse(xhr.responseText);
+            // data.forEach(function(value, index) {
+            //   var contentString = '<div>' + value.NAME + '</div><div>' + value.ADDR + '</div>';
+            //   var infowindow = new google.maps.InfoWindow({
+            //     content: contentString
+            //   });
+            //   var lat = value.LATITUDE;
+            //   var lng = value.LONGITUDE;
+            //   var latLng = new google.maps.LatLng(lat, lng);
+            //   var marker = new google.maps.Marker({
+            //     position: latLng,
+            //     map: map
+            //   });            
+            //   marker.addListener('click', function() {
+            //     infowindow.open(map, marker);
+            //   });
+            // });
+          }
+        };
+        xhr.send();
+      }
+    </script>
+    <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAGYWeqYavulBJRbDevbDNSYKejrNQ4mzo&callback=initMap">
+    </script>
+  </body>
 </html>

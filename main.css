@@ -20,5 +20,8 @@
     height: 700px;
     float: left;
     background-color: white;
+}
 
+#table1 {
+    width: 100%;
 }

@@ -14,11 +14,18 @@ from selenium import webdriver
 
 driver = webdriver.Chrome()  # Optional argument, if not specified will search path.
 driver.get(url);
-time.sleep(3) # Let the user actually see something!
+# time.sleep(1) # Let the user actually see something!
 search_box = driver.find_element_by_name('tenderName')
 search_box.send_keys('智慧')
-time.sleep(3)
+# time.sleep(1)
 tenderDate = driver.find_element_by_id('rangeTenderDateRadio').click()
 search_box.submit()
-time.sleep(5) # Let the user actually see something!
+html = driver.page_source
+# time.sleep(1) # Let the user actually see something!
 driver.quit()
+
+soup = BeautifulSoup(html)
+form = soup.find_all(class = "T12b")
+print(form.text)
+
+

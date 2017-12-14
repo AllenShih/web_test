@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-#coding=utf-8
 import pandas as pd
 import csv
 from bs4 import BeautifulSoup
@@ -15,9 +14,9 @@ def encode_decode(self):
     return self
 
 # windows version
-# driver = webdriver.Chrome(executable_path=r'C:/Webdrivers/chromedriver.exe')  # Optional argument, if not specified will search path.
+driver = webdriver.Chrome(executable_path=r'C:/Webdrivers/chromedriver.exe')  # Optional argument, if not specified will search path.
 # mac os version
-driver = webdriver.Chrome()
+# driver = webdriver.Chrome()
 
 driver.get(url)
 # time.sleep(1) # Let the user actually see something!

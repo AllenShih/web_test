@@ -2,7 +2,16 @@ import pyodbc, datetime, math, time
 from pathlib import Path
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-def effective_rainfall(s_id,record):
+def effective_rainfall(record,i_r,date):
+    eff_r = 0
+    if i_r > 4:
+        for r in record:
+            delta_time = date - r.rec_time
+            if delta_time.days > 0 and delta_time < 8:
+                eff_r += r.i_rainfall*0.50*0.8
+            if delta_time.days 
+        
+        
 
 
 # define record format
@@ -34,6 +43,7 @@ def record_CommercialRF(s_id,record):
                          s_id+','+\
                          str(r.i_rainfall*0.5)+','+\
                          str(r.a_rainfall*0.5)+','+\
+                         str(effective_rainfall(record, r.i_rainfall*0.5, r.rec_time))+','+\
                          str(r.v)+'\n'
             record_str += the_record
             last_record_time = r.rec_time

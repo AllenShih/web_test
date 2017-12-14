@@ -5,6 +5,7 @@ import pandas as pd
 import csv
 from bs4 import BeautifulSoup
 from selenium import webdriver
+import time
 
 url = "http://web.pcc.gov.tw/tps/pss/tender.do?method=goSearch&searchMode=common&searchType=advance&searchTarget=TPAM"
 
@@ -14,19 +15,19 @@ def encode_decode(self):
     return self
 
 # windows version
-driver = webdriver.Chrome(executable_path=r'C:/Webdrivers/chromedriver.exe')  # Optional argument, if not specified will search path.
+# driver = webdriver.Chrome(executable_path=r'C:/Webdrivers/chromedriver.exe')  # Optional argument, if not specified will search path.
 # mac os version
-# driver = webdriver.Chrome()
+driver = webdriver.Chrome()
 
 driver.get(url)
-# time.sleep(1) # Let the user actually see something!
+time.sleep(1) # Let the user actually see something!
 search_box = driver.find_element_by_name('tenderName')
 search_box.send_keys('智慧')
-# time.sleep(1)
+time.sleep(1)
 tenderDate = driver.find_element_by_id('rangeTenderDateRadio').click()
 search_box.submit()
 html = driver.page_source
-# time.sleep(5) # Let the user actually see something!
+time.sleep(5) # Let the user actually see something!
 driver.quit()
 
 f = open("tender.csv","w", encoding = 'utf8')

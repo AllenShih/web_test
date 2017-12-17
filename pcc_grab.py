@@ -15,9 +15,9 @@ def encode_decode(self):
     return self
 
 # windows version
-# driver = webdriver.Chrome(executable_path=r'C:/Webdrivers/chromedriver.exe')  # Optional argument, if not specified will search path.
+driver = webdriver.Chrome(executable_path=r'C:/Webdrivers/chromedriver.exe')  # Optional argument, if not specified will search path.
 # mac os version
-driver = webdriver.Chrome()
+# driver = webdriver.Chrome()
 
 driver.get(url)
 # time.sleep(1) # Let the user actually see something!
@@ -79,10 +79,13 @@ for html_set in html_all:
             start_date = category.findNext('td')
             end_date = start_date.findNext('td')
             money = end_date.findNext('td')
-            data = [[keywords, facility.text.strip(), title.strip(), int(times.text),\
-            start_date.text.strip(), end_date.text.strip(), money.text.strip(),\
-            url_all.strip()]]
-            w.writerows(data)
+            money = money.text.strip().replace(",","")
+            # print(keywords+money+title)
+            if money != "" and int(money)>2000000 and category.text == "勞務類" and tenderway.text != "公開取得報價單或企劃書":
+                data = [[keywords, facility.text.strip(), title.strip(), int(times.text),\
+                start_date.text.strip(), end_date.text.strip(), money,\
+                url_all.strip()]]
+                w.writerows(data)
             # print(data)
 
         for item in form2 :
@@ -98,11 +101,13 @@ for html_set in html_all:
             start_date = category.findNext('td')
             end_date = start_date.findNext('td')
             money = end_date.findNext('td')
-            data = [[keywords, facility.text.strip(), title.strip(), int(times.text),\
-            start_date.text.strip(), end_date.text.strip(), money.text.strip(),\
-            url_all.strip()]]
-            # data = [[title.strip()]]
-            w.writerows(data)
+            money = money.text.strip().replace(",","")
+            # print(keywords+money+title)
+            if money != "" and int(money)>2000000 and category.text == "勞務類" and tenderway.text != "公開取得報價單或企劃書":
+                data = [[keywords, facility.text.strip(), title.strip(), int(times.text),\
+                start_date.text.strip(), end_date.text.strip(), money,\
+                url_all.strip()]]
+                w.writerows(data)
             # print(data)
     cnt += 1
     f.close()

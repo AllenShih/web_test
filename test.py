@@ -16,8 +16,8 @@ from pathlib import Path
 
 
 money = "27,909,000"
-money = money.strip(',')
-print(money)
+money = money.replace(',','')
+print(int(money))
 
 
 # def get_sql():

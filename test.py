@@ -5,19 +5,23 @@ import datetime, math, time
 from pathlib import Path
 # from apscheduler.schedulers.blocking import BlockingScheduler
 
-# date = "2017-10-11 00:00:55.000"
-# date2 = "2017-10-11 00:00:55.000"
-# now = datetime.datetime.now() #.strftime('%Y-%m-%d %H:%M:%S')
-# # print(now)
-# delta = datetime.date(2017, 12, 31)-now.date()
-# # print(delta.days)
-# for i in range(4):
-#     print(i)
+date = "2017-10-11 00:00:55.000"
+date2 = "2017-10-11 00:00:55.000"
+now = datetime.datetime.now() #.strftime('%Y-%m-%d %H:%M:%S')
+dt = datetime.datetime(2017, 12, 18, 12, 30, 59, 0)
+timed = datetime.timedelta(hours=-5)
+delta = dt-datetime.datetime.now()
+print(delta)
+print(dt)
+print(datetime.datetime.now())
+print(dt<datetime.datetime.now())
+print(6*timed)
 
-
-money = "27,909,000"
-money = money.replace(',','')
-print(int(money))
+for i in range(4):
+    print(i)
+# money = "27,909,000"
+# money = money.replace(',','')
+# print(int(money))
 
 
 # def get_sql():

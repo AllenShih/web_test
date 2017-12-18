@@ -2,17 +2,54 @@ import pyodbc, datetime, math, time
 from pathlib import Path
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-def effective_rainfall(record,i_r,date):
-    eff_r = 0
-    if i_r > 4:
-        for r in record:
-            delta_time = date - r.rec_time
-            if delta_time.days > 0 and delta_time < 8:
-                eff_r += r.i_rainfall*0.50*0.8
-            if delta_time.days 
-        
-        
+def hourly_rainfall(record,date):
+    timedelta = datetime.timedelta(hours = 1)
+    h_rainfall = 0
+    onehourago = data - timedelta
+    for r in record:
+        if r.rec_time > onehourago and r.rec_time <= date:
+            h_rainfall += r.i_rainfall*0.5
+    return h_rainfall
 
+def last_7_days_rain(record, date):
+    timedelta = datetime.timedelta(days=7)
+    last7 = 0
+    sevendaysago = date - timedelta
+    for r in record:
+        if r.rec_time >= sevendaysago and r.rec_time < date:
+            last7 += r.i_rainfall*0.50*0.8      
+    return last7
+
+def rain_stop_check(record, date):
+    timedelta = datetime.timedelta(hours=1)
+    cnt = 0
+    for i in range(6):
+        accu_rain = 0
+        earlytime = date - timedelta
+        latetime = date
+        for r in record:
+            if r.rec_time >= earlytime and r.rec_time <= latetime:
+                accu_rain = accu_rain + r.i_rainfall*0.5
+        latetime = earlytime
+        earlytime = earlytime - timedelta
+        if accu_rain > 4:
+            cnt += 1
+    if cnt > 0:
+        return False
+    else:
+        return True
+
+def effective_rainfall(record,i_r,date,last7,last_rtime):
+    i_rain = 0
+    if rain_stop_check(record,date) == False:
+        for r in record:
+            if r.rec_time >= last_rtime and r.rec_time <= date:
+                i_rain = r.i_rainfall*0.5
+                eff_r = eff_r + i_rain
+        eff_r = eff_r + last7
+    else:
+        eff_r = last_7_days_rain(record,date)
+    return eff_r
 
 # define record format
 def record_Commercial(s_id,record):
@@ -37,16 +74,23 @@ def record_CommercialRF(s_id,record):
     record_str = ''
     the_record = ''
     last_record_time = None
+    last_rainfall = 0
+    last7 = 0
     for r in record:
+        hour_rain = hourly_rainfall(record, r.rec_time)
+        if hour_rain > 4 and last_rainfall < 4:
+            last_raining_time = r.rec_time
+            last7 = last_7_days_rain(record, r.rec_time)
         if last_record_time==None or (r.rec_time-last_record_time).seconds>180:
             the_record = str(r.rec_time)+','+\
                          s_id+','+\
                          str(r.i_rainfall*0.5)+','+\
                          str(r.a_rainfall*0.5)+','+\
-                         str(effective_rainfall(record, r.i_rainfall*0.5, r.rec_time))+','+\
+                         str(effective_rainfall(record, r.i_rainfall*0.5, r.rec_time, last7, last_raining_time))+','+\
                          str(r.v)+'\n'
             record_str += the_record
             last_record_time = r.rec_time
+        last_rainfall = hour_rain
     record_list = [record_str,the_record]
     return record_list
 def record_SmartStick(s_id,record):

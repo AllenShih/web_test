@@ -2,29 +2,31 @@ import pyodbc, datetime, math, time
 from pathlib import Path
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-def hourly_rainfall(record,date):
+def hourly_rainfall(one_hour_data, date):
     timedelta = datetime.timedelta(hours = 1)
     h_rainfall = 0
-    onehourago = data - timedelta
-    for r in record:
-        if r.rec_time > onehourago and r.rec_time <= date:
-            h_rainfall += r.i_rainfall*0.5
-    return h_rainfall
+    onehourago = date - timedelta
+    one_hour_data = [x for x in one_hour_data if x[1]>onehourago]
+    for item in one_hour_data:
+        h_rainfall += item[0]
+    print("hourly_rainfall counting.....")
+    return [one_hour_data, h_rainfall]
 
-def last_7_days_rain(record, date):
+def last_7_days_rain(seven_days_data, date):
     timedelta = datetime.timedelta(days=7)
     last7 = 0
     sevendaysago = date - timedelta
-    for r in record:
-        if r.rec_time >= sevendaysago and r.rec_time < date:
-            last7 += r.i_rainfall*0.50*0.8      
-    return last7
+    seven_days_data = [x for x in seven_days_data if x[1] >= sevendaysago]
+    for item in seven_days_data:
+        last7 += item[0]
+    print("last_7_day_rain counting.....")  
+    return [seven_days_data, last7]
 
-def rain_stop_check(record, date):
+def rain_stop_check(raining_data, date, last_raining_time):
     timedelta = datetime.timedelta(hours=1)
     cnt = 0
     for i in range(6):
-        accu_rain = 0
+        accumulate_rain = 0
         earlytime = date - timedelta
         latetime = date
         for r in record:
@@ -34,21 +36,28 @@ def rain_stop_check(record, date):
         earlytime = earlytime - timedelta
         if accu_rain > 4:
             cnt += 1
+    print("rain_stop_check counting.....")
+    if (date-last_raining_time)>6:
+        return True
     if cnt > 0:
         return False
     else:
         return True
 
-def effective_rainfall(record,i_r,date,last7,last_rtime):
-    i_rain = 0
-    if rain_stop_check(record,date) == False:
-        for r in record:
-            if r.rec_time >= last_rtime and r.rec_time <= date:
-                i_rain = r.i_rainfall*0.5
-                eff_r = eff_r + i_rain
-        eff_r = eff_r + last7
-    else:
-        eff_r = last_7_days_rain(record,date)
+def effective_rainfall(seven_days_data, date, last7, last_raining_time):
+    print("effective_rainfall counting.....")
+    timedelta = datetime.timedelta(hours=6)
+    timedelta_1 = datetime.timedelta(hours=1)
+    timedelta_7 = datetime.timedelta(days=7)
+    eff_r = 0
+    if (date - timedelta) > last_raining_time:
+        last7dayrain = last_7_days_rain(seven_days_data, date)
+        eff_r = last7dayrain[1]*0.8
+    elif (date - timedelta) <= last_raining_time:
+        seven_days_data = [x for x in seven_days_data if x[1] >= last_raining_time]
+        for item in seven_days_data:
+            eff_r += item[0]
+        eff_r += last7*0.8
     return eff_r
 
 # define record format
@@ -74,19 +83,35 @@ def record_CommercialRF(s_id,record):
     record_str = ''
     the_record = ''
     last_record_time = None
-    last_rainfall = 0
+    last_raining_time = datetime.datetime(2010, 12, 18, 12, 30, 59, 0)
     last7 = 0
+    one_hour_data = []
+    seven_days_data = []
+    raining_data = []
     for r in record:
-        hour_rain = hourly_rainfall(record, r.rec_time)
+        # data adding
+        rain_time = [r.i_rainfall*0.5, r.rec_time]
+        one_hour_data.append(rain_time)
+        seven_days_data.append(rain_time)
+        raining_data.append(rain_time)
+        # counting start
+        hourly_rain = hourly_rainfall(one_hour_data, r.rec_time)
+        hour_rain = hourly_rain[1]
+        one_hour_data = hourly_rain[0]
+
         if hour_rain > 4 and last_rainfall < 4:
+            raining_data = []
+            raining_data.append(rain_time)
             last_raining_time = r.rec_time
-            last7 = last_7_days_rain(record, r.rec_time)
+            last7daysrain = last_7_days_rain(seven_days_data, r.rec_time)
+            last7 = last7daysrain[1]
+            seven_days_data = last7daysrain[0]
         if last_record_time==None or (r.rec_time-last_record_time).seconds>180:
             the_record = str(r.rec_time)+','+\
                          s_id+','+\
                          str(r.i_rainfall*0.5)+','+\
                          str(r.a_rainfall*0.5)+','+\
-                         str(effective_rainfall(record, r.i_rainfall*0.5, r.rec_time, last7, last_raining_time))+','+\
+                         str(round(effective_rainfall(seven_days_data, r.rec_time, last7, last_raining_time),2))+','+\
                          str(r.v)+'\n'
             record_str += the_record
             last_record_time = r.rec_time
@@ -213,14 +238,14 @@ def get_sql():
     conn = pyodbc.connect(connStr)
     cur = conn.cursor()
     # Get record    
-    filePath = 'C://Inetpub//wwwroot//abri//sensor//taipeicity.csv'
+    filePath = 'C://test//taipeicity.csv'
     fout = open(filePath,'wt')
     for i in range(0,len(sensorID)):
         fw_log.write('Get [sid_'+sensorID[i]+'] record...')
         s_id = sensorID[i]
         record_str = ''
         record = cur.execute("select * from "+sensorDataTable[i]+" where s_id like '%"+s_id+"%' and (rec_time between '"+StartTime+"' and '"+EndTime+"') order by rec_time")
-        filePath = 'C://Inetpub//wwwroot//abri//sensor//sid_'+str(s_id)+'.csv'
+        filePath = 'C://test//sid_'+str(s_id)+'.csv'
         fout_sid = open(filePath,'wt')
         if sensorType[i]==1:
             fout_sid.write('rec_time,s_id,w1,w2,w3,w4,dist,v\n')
@@ -232,11 +257,8 @@ def get_sql():
             fout_sid.write('rec_time,s_id,inx,iny\n')
             [record_str,last_record] = record_TiltStick(s_id,record)
         elif sensorType[i]==4:
-            # 
-            fout_sid.write('rec_time,s_id,rainfall_10m,rainfall_acc,v\n')
-            # 
+            fout_sid.write('rec_time,s_id,rainfall_10m,rainfall_acc,rainfall_eff,v\n')
             [record_str,last_record] = record_CommercialRF(s_id,record)
-            
         fout_sid.write(record_str)
         fout.write(last_record)
         fout_sid.close()
@@ -245,6 +267,7 @@ def get_sql():
     conn.close()
     fw_log.write('['+now+'] CSV upload done !!!\n')
     fw_log.close()
+    print("get sql done")
 
 # Record Time range
 StartTime = '2017/08/04 12:00:00'
@@ -263,8 +286,9 @@ sensorType = [1,2,2,4]#Type1=commercial; Type2=SmartStick; Type3=TiltStick; Type
 sensorDataTable = ['taipeicity1','taipeicity2','taipeicity2','taipeicity3']
 
 # Start every 10 minutes
-log_file = 'C://Inetpub//wwwroot//2187//log//abri_get_sql_running.txt'
+log_file = 'C://test//abri_get_sql_running.txt'
 scheduler = BlockingScheduler()
 get_sql()
 scheduler.add_job(get_sql, 'cron', minute='5,15,25,35,45,55', end_date='2100-01-01')
 scheduler.start()
+

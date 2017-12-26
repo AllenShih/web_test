@@ -3,61 +3,65 @@ from pathlib import Path
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 def hourly_rainfall(one_hour_data, date):
-    timedelta = datetime.timedelta(hours = 1)
+    timedelta = datetime.timedelta(minutes = 57)
     h_rainfall = 0
     onehourago = date - timedelta
     one_hour_data = [x for x in one_hour_data if x[1]>onehourago]
     for item in one_hour_data:
         h_rainfall += item[0]
-    print("hourly_rainfall counting.....")
+    # print("hourly_rainfall counting.....")
     return [one_hour_data, h_rainfall]
 
-def last_7_days_rain(seven_days_data, date):
-    timedelta = datetime.timedelta(days=7)
+def last_7_days_rain(seven_days_data, date, raining_check):
+    timedelta_p = datetime.timedelta(days = 7, minutes = 3)
+    timedelta = datetime.timedelta(days = 6, minutes = 57)
     last7 = 0
-    sevendaysago = date - timedelta
-    seven_days_data = [x for x in seven_days_data if x[1] >= sevendaysago]
-    for item in seven_days_data:
-        last7 += item[0]
-    print("last_7_day_rain counting.....")  
+    
+    if raining_check == "raining":
+        sevendaysago = date - timedelta
+        seven_days_data = [x for x in seven_days_data if x[1] > sevendaysago]
+        seven_days_data_temp = [x for x in seven_days_data if x[1] < date]
+        for item in seven_days_data_temp:
+            last7 += item[0]
+    elif raining_check == "no-raining":
+        sevendaysago = date - timedelta_p
+        seven_days_data = [x for x in seven_days_data if x[1] > sevendaysago]
+        for item in seven_days_data:
+            last7 += item[0]
+    # print("last_7_day_rain counting.....")  
     return [seven_days_data, last7]
 
-def rain_stop_check(raining_data, date, last_raining_time):
-    timedelta = datetime.timedelta(hours=1)
-    cnt = 0
-    for i in range(6):
-        accumulate_rain = 0
-        earlytime = date - timedelta
-        latetime = date
-        for r in record:
-            if r.rec_time >= earlytime and r.rec_time <= latetime:
-                accu_rain = accu_rain + r.i_rainfall*0.5
-        latetime = earlytime
-        earlytime = earlytime - timedelta
-        if accu_rain > 4:
-            cnt += 1
-    print("rain_stop_check counting.....")
-    if (date-last_raining_time)>6:
-        return True
-    if cnt > 0:
-        return False
-    else:
-        return True
+# def raining_check(seven_days_data, date):
+#     timedelta = datetime.timedelta(hours=6)
+#     timedelta_1 = datetime.timedelta(hours=1)
+#     cnt = 0
+#     for i in range(6):
+#         new_date = date - i*timedelta_1
+#         new_date_hourago = new_date - timedelta_1
+#         one_hour_data = [x for x in seven_days_data if x[1] > new_date_hourago and x[1] <= new_date]
+#         new_date_hourly_rain = hourly_rainfall(one_hour_data,new_date)
+#         if new_date_hourly_rain[1] > 4:
+#             cnt+=1
+#     if cnt>0:
+#         return False
+#     else:
+#         return True
 
-def effective_rainfall(seven_days_data, date, last7, last_raining_time):
-    print("effective_rainfall counting.....")
-    timedelta = datetime.timedelta(hours=6)
+
+def effective_rainfall(seven_days_data, date, last7, first_raining_time, last_raining_time):
+    # print("effective_rainfall counting.....")
+    timedelta = datetime.timedelta(hours=6, minutes = 2)
     timedelta_1 = datetime.timedelta(hours=1)
     timedelta_7 = datetime.timedelta(days=7)
     eff_r = 0
     if (date - timedelta) > last_raining_time:
-        last7dayrain = last_7_days_rain(seven_days_data, date)
+        last7dayrain = last_7_days_rain(seven_days_data, date, "no-raining")
         eff_r = last7dayrain[1]*0.8
-    elif (date - timedelta) <= last_raining_time:
-        seven_days_data = [x for x in seven_days_data if x[1] >= last_raining_time]
+    elif (date - timedelta) < last_raining_time:
+        seven_days_data = [x for x in seven_days_data if x[1] >= first_raining_time]
         for item in seven_days_data:
             eff_r += item[0]
-        eff_r += last7*0.8
+        eff_r += (last7*0.8)
     return eff_r
 
 # define record format
@@ -84,34 +88,35 @@ def record_CommercialRF(s_id,record):
     the_record = ''
     last_record_time = None
     last_raining_time = datetime.datetime(2010, 12, 18, 12, 30, 59, 0)
+    first_raining_time = last_raining_time
     last7 = 0
     one_hour_data = []
     seven_days_data = []
-    raining_data = []
     for r in record:
         # data adding
         rain_time = [r.i_rainfall*0.5, r.rec_time]
         one_hour_data.append(rain_time)
         seven_days_data.append(rain_time)
-        raining_data.append(rain_time)
         # counting start
         hourly_rain = hourly_rainfall(one_hour_data, r.rec_time)
         hour_rain = hourly_rain[1]
         one_hour_data = hourly_rain[0]
 
         if hour_rain > 4 and last_rainfall < 4:
-            raining_data = []
-            raining_data.append(rain_time)
-            last_raining_time = r.rec_time
-            last7daysrain = last_7_days_rain(seven_days_data, r.rec_time)
+            first_raining_time = r.rec_time
+            last7daysrain = last_7_days_rain(seven_days_data, r.rec_time, "raining")
             last7 = last7daysrain[1]
             seven_days_data = last7daysrain[0]
+        if hour_rain > 4:
+            last_raining_time = r.rec_time
+        if r.rec_time<datetime.datetime(2017, 9, 30, 12, 30, 59, 0):
+            print(last_raining_time)
         if last_record_time==None or (r.rec_time-last_record_time).seconds>180:
             the_record = str(r.rec_time)+','+\
                          s_id+','+\
                          str(r.i_rainfall*0.5)+','+\
                          str(r.a_rainfall*0.5)+','+\
-                         str(round(effective_rainfall(seven_days_data, r.rec_time, last7, last_raining_time),2))+','+\
+                         str(round(effective_rainfall(seven_days_data, r.rec_time, last7, first_raining_time, last_raining_time),2))+','+\
                          str(r.v)+'\n'
             record_str += the_record
             last_record_time = r.rec_time

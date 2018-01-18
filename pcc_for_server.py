@@ -36,7 +36,6 @@ def send_gmail(top_priority):
     msg["From"] = sender
     msg["To"] = ", ".join(receivers)
     msg["Subject"] = "電子採購網搜尋結果 "+str(date)
-# <td>"+str(item[6])+"</td>\
     Text = "<html><p><b>電子採購網自動搜尋</b><p><html>\n"
     Text = Text + "<p>Criteria : 金額大於五百萬、關鍵字出現次數大於二</p>"
     Text = Text + " <table>\
@@ -73,6 +72,7 @@ def send_gmail(top_priority):
         msg.attach(part)
     smtpObj = smtplib.SMTP()
     smtpObj.connect(smtpserver,587)
+    # at home using port 25 at firm using port 587
     smtpObj.ehlo()
     smtpObj.starttls()
     smtpObj.ehlo()
@@ -82,9 +82,9 @@ def send_gmail(top_priority):
 
 
 # windows version
-driver = webdriver.Chrome(executable_path=r'C:/Webdrivers/chromedriver.exe')  # Optional argument, if not specified will search path.
+# driver = webdriver.Chrome(executable_path=r'C:/Webdrivers/chromedriver.exe')  # Optional argument, if not specified will search path.
 # mac os version
-# driver = webdriver.Chrome()
+driver = webdriver.Chrome()
 
 driver.get(url)
 # time.sleep(1) # Let the user actually see something!
@@ -153,16 +153,16 @@ for html_set in html_all:
                 end_date = start_date.findNext('td')
                 money = end_date.findNext('td')
                 new_money = money.text.strip().replace(",","")  
-                if new_money != "" and int(new_money)>=5000000 and temp_cnt >= 2:
+                if new_money != "" and int(new_money)>=3000000 and temp_cnt > 1:
                     if title not in top_priority_title:
-                        temp_list = [keywords, facility.text.strip(), title.strip(), times.text,\
+                        temp_list = [keywords, facility.text.strip(), title.strip(), times.text.strip(),\
                         money.text.strip(), end_date.text.strip(), url_all.strip()]
                         top_priority.append(temp_list)
                         top_priority_title.append(title)
                 if new_money != "" and int(new_money)>2000000 and category.text == "勞務類" and tenderway.text != "公開取得報價單或企劃書":
                     data = [[keywords, facility.text.strip(), title.strip(), int(times.text),\
                     start_date.text.strip(), end_date.text.strip(), money.text,\
-                    url_all.strip()]]
+                    url_all.strip(),temp_cnt]]
                     w.writerows(data)
             # print(data)
 
@@ -185,20 +185,21 @@ for html_set in html_all:
                 end_date = start_date.findNext('td')
                 money = end_date.findNext('td')
                 new_money = money.text.strip().replace(",","")  
-                if new_money != "" and int(new_money)>=5000000 and temp_cnt >= 2:
+                if new_money != "" and int(new_money)>=3000000 and temp_cnt > 1:
                     if title not in top_priority_title:
-                        temp_list = [keywords, facility.text.strip(), title.strip(), times.text,\
+                        temp_list = [keywords, facility.text.strip(), title.strip(), times.text.strip(),\
                         money.text.strip(), end_date.text.strip(), url_all.strip()]
                         top_priority.append(temp_list)
                         top_priority_title.append(title)
                 if new_money != "" and int(new_money)>2000000 and category.text == "勞務類" and tenderway.text != "公開取得報價單或企劃書":
                     data = [[keywords, facility.text.strip(), title.strip(), int(times.text),\
                     start_date.text.strip(), end_date.text.strip(), money.text,\
-                    url_all.strip()]]
+                    url_all.strip(),temp_cnt]]
                     w.writerows(data)
             # print(data)
     cnt += 1
     f.close()
-
+for item in top_priority:
+    print(item)
 # print(top_priority)
-send_gmail(top_priority)
+# send_gmail(top_priority)

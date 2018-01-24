@@ -29,15 +29,13 @@ def send_gmail(top_priority):
     login = "clshih73@gmail.com"
     password = "workaccount1234"
     sender = "clshih73@gmail.com"
-    receivers = ["kingjames1324@gmail.com", "cwshen@sinotech.org.tw", "pcchi@sinotech.org.tw"," ywlin@sinotech.org.tw",\
-    "tyt1006@sinotech.org.tw","lschou@sinotech.org.tw","baconlin@sinotech.org.tw","khlin0506@gmail.com"]
-    # receivers = ["kingjames1324@gmail.com","khlin0506@gmail.com"]
+    receivers = ["kingjames1324@gmail.com","ericsu0913@gmail.com","alex332233@gmail.com"]
     # receivers = ["kingjames1324@gmail.com"]
     date = datetime.date.today()
     msg = MIMEMultipart()
     msg["From"] = sender
     msg["To"] = ", ".join(receivers)
-    msg["Subject"] = "電子採購網搜尋結果 "+str(date)
+    msg["Subject"] = "電子採購網搜尋結果(標的：智慧、大數據、物聯網、水資源) "+str(date)
 # <td>"+str(item[6])+"</td>\
     Text = "<html><p><b>電子採購網自動搜尋</b><p><html>\n"
     # Text = Text + "<p>Criteria : 金額大於三百萬、關鍵字出現次數大於二</p>"
@@ -62,17 +60,17 @@ def send_gmail(top_priority):
                         <td>"+"<a href="+item[6]+">URL</a>"+"</td>\
         　               </tr>"
     Text = Text +"</table>\n"
-    Text = Text +"<p><b>其餘完整搜尋結果於附件</b></p>"
+    # Text = Text +"<p><b>其餘完整搜尋結果於附件</b></p>"
 
     msg.attach(MIMEText(Text,'html','utf-8'))
-    filenames = ["A_slopeland.csv","B_smart.csv","C_resource.csv","D_land.csv"]
+    # filenames = ["A_slopeland.csv","B_smart.csv","C_resource.csv","D_land.csv"]
 
-    for file in filenames:
-        part = MIMEBase("application", "octet-stream")
-        part.set_payload(open(file,'rb').read())
-        encode_base64(part)
-        part.add_header("Content-Disposition", 'attachment; filename="%s"' % os.path.basename(file))
-        msg.attach(part)
+    # for file in filenames:
+    #     part = MIMEBase("application", "octet-stream")
+    #     part.set_payload(open(file,'rb').read())
+    #     encode_base64(part)
+    #     part.add_header("Content-Disposition", 'attachment; filename="%s"' % os.path.basename(file))
+    #     msg.attach(part)
     smtpObj = smtplib.SMTP()
     smtpObj.connect(smtpserver,587)
     smtpObj._host = "smtp.gmail.com"
@@ -91,12 +89,9 @@ driver = webdriver.Chrome()
 
 driver.get(url)
 # time.sleep(1) # Let the user actually see something!
-A = ["坡地","邊坡","崩塌","土石流","防災","土砂"]
-B = ["智慧","大數據","物聯網","雲端"]
-C = ["水資源","太陽能","綠能"]
-D = ["社區","土地利用","土地可利用","韌性"]
-key_words = [A,B,C,D]
-all_key_words = A+B+C+D
+Ａ = ["智慧","大數據","物聯網","水資源"]
+key_words = [A]
+all_key_words = A
 html_all = []
 
 # open up the browser and do the search
@@ -122,15 +117,15 @@ driver.quit()
 base_url = "http://web.pcc.gov.tw/tps"
 top_priority = []
 top_priority_title = []
-label = ["A_slopeland","B_smart","C_resource","D_land"]
-cnt = 0
+# label = ["A_slopeland","B_smart","C_resource","D_land"]
+# cnt = 0
 for html_set in html_all:
-    file_name = label[cnt]+".csv"
-    f = open(file_name,"w", encoding = 'utf_8_sig')
+    # file_name = label[cnt]+".csv"
+    # f = open(file_name,"w", encoding = 'utf_8_sig')
     # f.write(codecs.BOM_UTF8)
-    w = csv.writer(f)
-    top_row = [["分類","機關名稱","標案名稱","傳輸次數","公告日期","截止日期","金額","網址"]]
-    w.writerows(top_row)
+    # w = csv.writer(f)
+    # top_row = [["分類","機關名稱","標案名稱","傳輸次數","公告日期","截止日期","金額","網址"]]
+    # w.writerows(top_row)
     for data in html_set:
         soup = BeautifulSoup(data[0],"lxml")
         # form = soup.find_all("div",{"id":"print_area"})
@@ -157,17 +152,17 @@ for html_set in html_all:
                 end_date = start_date.findNext('td')
                 money = end_date.findNext('td')
                 new_money = money.text.strip().replace(",","")  
-                if new_money != "" and int(new_money)>=0 and temp_cnt >= 0:
+                if new_money != "" and int(new_money)>=0 and temp_cnt >= 0 and category.text == "勞務類" and tenderway.text != "公開取得報價單或企劃書":
                     if title not in top_priority_title:
                         temp_list = [keywords, facility.text.strip(), title.strip(), times.text,\
                         money.text.strip(), end_date.text.strip(), url_all.strip()]
                         top_priority.append(temp_list)
                         top_priority_title.append(title)
-                if new_money != "" and int(new_money)>2000000 and category.text == "勞務類" and tenderway.text != "公開取得報價單或企劃書":
-                    data = [[keywords, facility.text.strip(), title.strip(), int(times.text),\
-                    start_date.text.strip(), end_date.text.strip(), money.text,\
-                    url_all.strip()]]
-                    w.writerows(data)
+                # if new_money != "" and int(new_money)>2000000 and category.text == "勞務類" and tenderway.text != "公開取得報價單或企劃書":
+                #     data = [[keywords, facility.text.strip(), title.strip(), int(times.text),\
+                #     start_date.text.strip(), end_date.text.strip(), money.text,\
+                #     url_all.strip()]]
+                #     w.writerows(data)
             # print(data)
 
         for item in form2 :
@@ -189,20 +184,20 @@ for html_set in html_all:
                 end_date = start_date.findNext('td')
                 money = end_date.findNext('td')
                 new_money = money.text.strip().replace(",","")  
-                if new_money != "" and int(new_money)>=0 and temp_cnt >= 0:
+                if new_money != "" and int(new_money)>=0 and temp_cnt >= 0 and category.text == "勞務類" and tenderway.text != "公開取得報價單或企劃書":
                     if title not in top_priority_title:
                         temp_list = [keywords, facility.text.strip(), title.strip(), times.text,\
                         money.text.strip(), end_date.text.strip(), url_all.strip()]
                         top_priority.append(temp_list)
                         top_priority_title.append(title)
-                if new_money != "" and int(new_money)>2000000 and category.text == "勞務類" and tenderway.text != "公開取得報價單或企劃書":
-                    data = [[keywords, facility.text.strip(), title.strip(), int(times.text),\
-                    start_date.text.strip(), end_date.text.strip(), money.text,\
-                    url_all.strip()]]
-                    w.writerows(data)
+                # if new_money != "" and int(new_money)>2000000 and category.text == "勞務類" and tenderway.text != "公開取得報價單或企劃書":
+                #     data = [[keywords, facility.text.strip(), title.strip(), int(times.text),\
+                #     start_date.text.strip(), end_date.text.strip(), money.text,\
+                #     url_all.strip()]]
+                #     w.writerows(data)
             # print(data)
-    cnt += 1
-    f.close()
+    # cnt += 1
+    # f.close()
 
 # print(top_priority)
 send_gmail(top_priority)

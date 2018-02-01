@@ -89,7 +89,7 @@ driver = webdriver.Chrome()
 
 driver.get(url)
 # time.sleep(1) # Let the user actually see something!
-Ａ = ["智慧","大數據","物聯網","水資源"]
+Ａ = ["水庫","地下水","防汛","灌溉","節水","管理模式","水管理","自來水","水網","雨水","用水","水資源物聯網","水源","河川"]
 key_words = [A]
 all_key_words = A
 html_all = []
@@ -152,7 +152,7 @@ for html_set in html_all:
                 end_date = start_date.findNext('td')
                 money = end_date.findNext('td')
                 new_money = money.text.strip().replace(",","")  
-                if new_money != "" and int(new_money)>=0 and temp_cnt >= 0 and category.text == "勞務類" and tenderway.text != "公開取得報價單或企劃書":
+                if new_money != "" and int(new_money)>=0 and temp_cnt >= 0:
                     if title not in top_priority_title:
                         temp_list = [keywords, facility.text.strip(), title.strip(), times.text,\
                         money.text.strip(), end_date.text.strip(), url_all.strip()]
@@ -184,7 +184,7 @@ for html_set in html_all:
                 end_date = start_date.findNext('td')
                 money = end_date.findNext('td')
                 new_money = money.text.strip().replace(",","")  
-                if new_money != "" and int(new_money)>=0 and temp_cnt >= 0 and category.text == "勞務類" and tenderway.text != "公開取得報價單或企劃書":
+                if new_money != "" and int(new_money)>=0 and temp_cnt >= 0:
                     if title not in top_priority_title:
                         temp_list = [keywords, facility.text.strip(), title.strip(), times.text,\
                         money.text.strip(), end_date.text.strip(), url_all.strip()]

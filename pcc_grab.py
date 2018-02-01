@@ -30,8 +30,8 @@ def send_gmail(top_priority):
     password = "workaccount1234"
     sender = "clshih73@gmail.com"
     receivers = ["kingjames1324@gmail.com", "cwshen@sinotech.org.tw", "pcchi@sinotech.org.tw"," ywlin@sinotech.org.tw",\
-    "tyt1006@sinotech.org.tw","lschou@sinotech.org.tw","baconlin@sinotech.org.tw","khlin0506@gmail.com"]
-    # receivers = ["kingjames1324@gmail.com","khlin0506@gmail.com"]
+    "tyt1006@sinotech.org.tw","baconlin@sinotech.org.tw","khlin0506@gmail.com"]
+    # receivers = ["kingjames1324@gmail.com","khlin0506@gmail.com","lschou@sinotech.org.tw"]
     # receivers = ["kingjames1324@gmail.com"]
     date = datetime.date.today()
     msg = MIMEMultipart()
@@ -40,7 +40,7 @@ def send_gmail(top_priority):
     msg["Subject"] = "電子採購網搜尋結果 "+str(date)
 # <td>"+str(item[6])+"</td>\
     Text = "<html><p><b>電子採購網自動搜尋</b><p><html>\n"
-    # Text = Text + "<p>Criteria : 金額大於三百萬、關鍵字出現次數大於二</p>"
+    Text = Text + "<p>Criteria : 金額大於兩百萬、勞務類、非公開取得招標文件</p>"
     Text = Text + " <table>\
     　               <tr>\
     　               <td>"+"<b>"+"分類"+"</b>"+"</td>\
@@ -48,6 +48,7 @@ def send_gmail(top_priority):
                      <td>"+"<b>"+"案名"+"</b>"+"</td>\
                      <td>"+"<b>"+"次數"+"</b>"+"</td>\
                      <td>"+"<b>"+"金額"+"</b>"+"</td>\
+                     <td>"+"<b>"+"公告日期"+"</b>"+"</td>\
                      <td>"+"<b>"+"截止日期"+"</b>"+"</td>\
                      <td>"+"<b>"+"Link"+"</b>"+"</td>\
     　               </tr>"
@@ -59,7 +60,8 @@ def send_gmail(top_priority):
                         <td>"+item[3]+"</td>\
                         <td>"+item[4]+"</td>\
                         <td>"+item[5]+"</td>\
-                        <td>"+"<a href="+item[6]+">URL</a>"+"</td>\
+                        <td>"+item[6]+"</td>\
+                        <td>"+"<a href="+item[7]+">URL</a>"+"</td>\
         　               </tr>"
     Text = Text +"</table>\n"
     Text = Text +"<p><b>其餘完整搜尋結果於附件</b></p>"
@@ -91,10 +93,10 @@ driver = webdriver.Chrome()
 
 driver.get(url)
 # time.sleep(1) # Let the user actually see something!
-A = ["坡地","邊坡","崩塌","土石流","防災","土砂"]
+A = ["坡地","邊坡","崩塌","土石流","防災","土砂","全災"]
 B = ["智慧","大數據","物聯網","雲端"]
 C = ["水資源","太陽能","綠能"]
-D = ["社區","土地利用","土地可利用","韌性"]
+D = ["社區","土地利用","土地可利用","韌性", "地理"]
 key_words = [A,B,C,D]
 all_key_words = A+B+C+D
 html_all = []
@@ -157,10 +159,10 @@ for html_set in html_all:
                 end_date = start_date.findNext('td')
                 money = end_date.findNext('td')
                 new_money = money.text.strip().replace(",","")  
-                if new_money != "" and int(new_money)>=0 and temp_cnt >= 0:
+                if new_money != "" and int(new_money)>=2000000 and temp_cnt >= 0 and category.text == "勞務類" and tenderway.text != "公開取得報價單或企劃書":
                     if title not in top_priority_title:
                         temp_list = [keywords, facility.text.strip(), title.strip(), times.text,\
-                        money.text.strip(), end_date.text.strip(), url_all.strip()]
+                        money.text.strip(), start_date.text.strip(), end_date.text.strip(), url_all.strip()]
                         top_priority.append(temp_list)
                         top_priority_title.append(title)
                 if new_money != "" and int(new_money)>2000000 and category.text == "勞務類" and tenderway.text != "公開取得報價單或企劃書":
@@ -189,10 +191,10 @@ for html_set in html_all:
                 end_date = start_date.findNext('td')
                 money = end_date.findNext('td')
                 new_money = money.text.strip().replace(",","")  
-                if new_money != "" and int(new_money)>=0 and temp_cnt >= 0:
+                if new_money != "" and int(new_money)>=2000000 and temp_cnt >= 0 and category.text == "勞務類" and tenderway.text != "公開取得報價單或企劃書":
                     if title not in top_priority_title:
                         temp_list = [keywords, facility.text.strip(), title.strip(), times.text,\
-                        money.text.strip(), end_date.text.strip(), url_all.strip()]
+                        money.text.strip(), start_date.text.strip(), end_date.text.strip(), url_all.strip()]
                         top_priority.append(temp_list)
                         top_priority_title.append(title)
                 if new_money != "" and int(new_money)>2000000 and category.text == "勞務類" and tenderway.text != "公開取得報價單或企劃書":

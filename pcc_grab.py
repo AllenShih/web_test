@@ -29,10 +29,10 @@ def send_gmail(top_priority):
     login = "clshih73@gmail.com"
     password = "workaccount1234"
     sender = "clshih73@gmail.com"
-    receivers = ["kingjames1324@gmail.com", "cwshen@sinotech.org.tw", "pcchi@sinotech.org.tw"," ywlin@sinotech.org.tw",\
-    "tyt1006@sinotech.org.tw","baconlin@sinotech.org.tw","khlin0506@gmail.com"]
+    # receivers = ["kingjames1324@gmail.com", "cwshen@sinotech.org.tw", "pcchi@sinotech.org.tw"," ywlin@sinotech.org.tw",\
+    # "tyt1006@sinotech.org.tw","baconlin@sinotech.org.tw","khlin0506@gmail.com"]
     # receivers = ["kingjames1324@gmail.com","khlin0506@gmail.com","lschou@sinotech.org.tw"]
-    # receivers = ["kingjames1324@gmail.com"]
+    receivers = ["kingjames1324@gmail.com"]
     date = datetime.date.today()
     msg = MIMEMultipart()
     msg["From"] = sender
@@ -93,8 +93,8 @@ driver = webdriver.Chrome()
 
 driver.get(url)
 # time.sleep(1) # Let the user actually see something!
-A = ["坡地","邊坡","崩塌","土石流","防災","土砂","全災"]
-B = ["智慧","大數據","物聯網","雲端"]
+A = ["坡地","邊坡","崩塌","土石流","防災","土砂","全災","溪溝","水土保持"]
+B = ["智慧","大數據","物聯網","雲端","監測"]
 C = ["水資源","太陽能","綠能"]
 D = ["社區","土地利用","土地可利用","韌性", "地理"]
 key_words = [A,B,C,D]

@@ -21,9 +21,10 @@ def encode_decode(self):
 f = open("google_craw.csv","w", encoding = 'utf8')
 w = csv.writer(f)
 
-question = "防災+食品+公司"
+# question = "防災+食品+公司"
+question = "NBA"
 
-url_base = "https://www.google.com.tw/search?q="
+url_base = "https://www.google.com/search?q="
 url = url_base+question
 
 r = requests.get(url)
@@ -34,7 +35,8 @@ block = soup.find_all("h3", {"class":"r"})
 for item in block:
     title = item.find("a")
     url_new = title.get("href") 
-    print(encode_decode(title.text))
+    # print(encode_decode(title.text))
+    print(title.text)
     data = [[title.text]]
     w.writerows(data)
 

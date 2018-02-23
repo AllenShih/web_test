@@ -41,6 +41,7 @@ def send_gmail(top_priority):
 # <td>"+str(item[6])+"</td>\
     Text = "<html><p><b>電子採購網自動搜尋</b><p><html>\n"
     Text = Text + "<p>Criteria : 金額大於兩百萬、勞務類、非公開取得招標文件</p>"
+    Text = Text + "<p>新增液化於防災分類</p>"
     Text = Text + " <table>\
     　               <tr>\
     　               <td>"+"<b>"+"分類"+"</b>"+"</td>\
@@ -93,7 +94,7 @@ driver = webdriver.Chrome()
 
 driver.get(url)
 # time.sleep(1) # Let the user actually see something!
-A = ["坡地","邊坡","崩塌","土石流","防災","土砂","全災","溪溝","水土保持"]
+A = ["坡地","邊坡","崩塌","土石流","防災","土砂","全災","溪溝","水土保持","液化"]
 B = ["智慧","大數據","物聯網","雲端","監測"]
 C = ["水資源","太陽能","綠能"]
 D = ["社區","土地利用","土地可利用","韌性", "地理"]

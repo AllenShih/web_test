@@ -41,7 +41,7 @@ def send_gmail(top_priority):
 # <td>"+str(item[6])+"</td>\
     Text = "<html><p><b>電子採購網自動搜尋</b><p><html>\n"
     Text = Text + "<p>Criteria : 金額大於兩百萬、勞務類、非公開取得招標文件</p>"
-    Text = Text + "<p>新增液化於防災分類</p>"
+    # Text = Text + "<p>新增液化於防災分類</p>"
     Text = Text + " <table>\
     　               <tr>\
     　               <td>"+"<b>"+"分類"+"</b>"+"</td>\

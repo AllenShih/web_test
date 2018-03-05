@@ -12,7 +12,7 @@ import smtplib
 import codecs
 
 import urllib  
-import simplejson  
+# import simplejson  
 def encode_decode(self):
     self = self.encode("utf8").decode("gbk", "ignore")
     # self = self.encode(sys.stdin.encoding, "replace").decode(sys.stdin.encoding)

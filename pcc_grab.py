@@ -39,9 +39,9 @@ def send_gmail(top_priority):
     msg["To"] = ", ".join(receivers)
     msg["Subject"] = "電子採購網搜尋結果 "+str(date)
 # <td>"+str(item[6])+"</td>\
-    Text = "<html><p><b>電子採購網自動搜尋</b><p><html>\n"
+    Text = "<html><p><b>電子採購網自動搜尋(新增國家災害防救科技中心)</b><p><html>\n"
     Text = Text + "<p>Criteria : 金額大於兩百萬、勞務類、非公開取得招標文件</p>"
-    # Text = Text + "<p>新增液化於防災分類</p>"
+    Text = Text + "<p>新增國家災害防救科技中心於機關分類</p>"
     Text = Text + " <table>\
     　               <tr>\
     　               <td>"+"<b>"+"分類"+"</b>"+"</td>\
@@ -101,7 +101,7 @@ D = ["社區","土地利用","土地可利用","韌性", "地理"]
 key_words = [A,B,C,D]
 all_key_words = A+B+C+D
 html_all = []
-
+orgName = ["國家災害防救科技中心"]
 # open up the browser and do the search
 for item in key_words:
     html_container = []
@@ -119,13 +119,29 @@ for item in key_words:
         # html_all.append([html, words])
         html_container.append([html, words])
     html_all.append(html_container)
+
+html_container = []
+for item in orgName:
+    search_box = driver.find_element_by_name('tenderName')
+    search_box.clear()
+    search_box = driver.find_element_by_name("orgName")
+    search_box.clear()
+    search_box.send_keys(item)
+    tenderDate = driver.find_element_by_id('rangeTenderDateRadio').click()
+    time.sleep(1)
+    search_box.submit() #送出
+    html = driver.page_source 
+    time.sleep(1) # Let the user actually see something!
+    driver.back() #上一頁
+    html_container.append([html, item])
+html_all.append(html_container)
 driver.quit()
 
 
 base_url = "http://web.pcc.gov.tw/tps"
 top_priority = []
 top_priority_title = []
-label = ["A_slopeland","B_smart","C_resource","D_land"]
+label = ["A_slopeland","B_smart","C_resource","D_land","OrgName"]
 cnt = 0
 for html_set in html_all:
     file_name = label[cnt]+".csv"

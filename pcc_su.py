@@ -29,13 +29,13 @@ def send_gmail(top_priority):
     login = "clshih73@gmail.com"
     password = "workaccount1234"
     sender = "clshih73@gmail.com"
-    receivers = ["kingjames1324@gmail.com","ericsu0913@gmail.com","alex332233@gmail.com"]
-    # receivers = ["kingjames1324@gmail.com"]
+    receivers = ["ericsu0913@gmail.com","alex332233@gmail.com","khlin0506@gmail.com"]
+    # receivers = ["khlin0506@gmail.com"]
     date = datetime.date.today()
     msg = MIMEMultipart()
     msg["From"] = sender
     msg["To"] = ", ".join(receivers)
-    msg["Subject"] = "電子採購網搜尋結果(標的：智慧、大數據、物聯網、水資源) "+str(date)
+    msg["Subject"] = "電子採購網搜尋結果(標的：水庫、地下水、防汛、灌溉、節水、管理模式、水管理、自來水、水網、雨水、用水、水資源物聯網、水源、河川) "+str(date)
 # <td>"+str(item[6])+"</td>\
     Text = "<html><p><b>電子採購網自動搜尋</b><p><html>\n"
     # Text = Text + "<p>Criteria : 金額大於三百萬、關鍵字出現次數大於二</p>"

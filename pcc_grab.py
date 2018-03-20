@@ -39,9 +39,9 @@ def send_gmail(top_priority):
     msg["To"] = ", ".join(receivers)
     msg["Subject"] = "電子採購網搜尋結果 "+str(date)
 # <td>"+str(item[6])+"</td>\
-    Text = "<html><p><b>電子採購網自動搜尋(新增國家災害防救科技中心)</b><p><html>\n"
+    Text = "<html><p><b>電子採購網自動搜尋</b><p><html>\n"
     Text = Text + "<p>Criteria : 金額大於兩百萬、勞務類、非公開取得招標文件</p>"
-    Text = Text + "<p>新增國家災害防救科技中心於機關分類</p>"
+    # Text = Text + "<p>新增國家災害防救科技中心於機關分類</p>"
     Text = Text + " <table>\
     　               <tr>\
     　               <td>"+"<b>"+"分類"+"</b>"+"</td>\
@@ -107,6 +107,7 @@ for item in key_words:
     html_container = []
     for words in item:
         search_box = driver.find_element_by_name('tenderName')
+        print(search_box)
         search_box.clear() # clear the search box
         search_box.send_keys(words) # enter the word in search box
         tenderDate = driver.find_element_by_id('rangeTenderDateRadio').click() #click on the right box

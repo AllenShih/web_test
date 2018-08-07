@@ -26,7 +26,13 @@ for i in range(10):
         real_content = content.findNext("div")
         data = [[header.text, url_new, real_content.text]]
         w.writerows(data)
+        key_words = ["水利署","政府","出版"]
+        for words in key_words:
+            if words in header.text:
+                print(header.text)
+            else:
+                print("Nothing")
     cnt = cnt + 1
-# print(real_content.text)
+
     
 
